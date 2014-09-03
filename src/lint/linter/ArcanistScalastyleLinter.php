@@ -2,8 +2,8 @@
 
 final class ArcanistScalastyleLinter extends ArcanistExternalLinter {
 
-  private $jarPath;
-  private $configPath;
+  private $jarPath = null;
+  private $configPath = null;
 
   public function getInfoURI() {
     return 'http://www.scalastyle.org/';
@@ -34,6 +34,15 @@ final class ArcanistScalastyleLinter extends ArcanistExternalLinter {
   }
 
   protected function getMandatoryFlags() {
+    if ($this->jarPath === null) {
+      throw new ArcanistUsageException(
+        pht('Scalastyle JAR path must be configured.'));
+    }
+    if ($this->configPath === null) {
+      throw new ArcanistUsageException(
+        pht('Scalastyle config XML path must be configured.'));
+    }
+
     return array(
       '-jar', $this->jarPath,
       '--config', $this->configPath,
@@ -132,7 +141,7 @@ final class ArcanistScalastyleLinter extends ArcanistExternalLinter {
           }
         }
 
-        throw new Exception(
+        throw new ArcanistUsageException(
           pht('None of the configured Scalastyle JARs can be located.'));
 
       case 'config':
@@ -153,7 +162,7 @@ final class ArcanistScalastyleLinter extends ArcanistExternalLinter {
           }
         }
 
-        throw new Exception(
+        throw new ArcanistUsageException(
           pht('None of the configured Scalastyle configs can be located.'));
     }
 
