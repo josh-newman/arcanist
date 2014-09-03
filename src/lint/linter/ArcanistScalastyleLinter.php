@@ -29,8 +29,15 @@ final class ArcanistScalastyleLinter extends ArcanistExternalLinter {
     return 'See http://www.scalastyle.org/command-line.html';
   }
 
+  public function shouldExpectCommandErrors() {
+    return true;
+  }
+
   protected function getMandatoryFlags() {
-    return array('-jar', $this->jarPath, '--config', $this->configPath);
+    return array(
+      '-jar', $this->jarPath,
+      '--config', $this->configPath,
+      '--quiet', 'true');
   }
 
   protected function getDefaultFlags() {
@@ -38,7 +45,52 @@ final class ArcanistScalastyleLinter extends ArcanistExternalLinter {
   }
 
   protected function parseLinterOutput($path, $err, $stdout, $stderr) {
-    return array();
+
+    $messages = array();
+    $lines = explode(PHP_EOL, trim($stdout));
+
+    foreach ($lines as $line) {
+      $lintMessage = id(new ArcanistLintMessage())
+        ->setPath($path)
+        ->setCode($this->getLinterName());
+
+      $matches = array();
+      if (preg_match('/^([a-z]+)/', $line, $matches)) {
+        switch ($matches[1]) {
+          case 'warning':
+            $lintMessage->setSeverity(ArcanistLintSeverity::SEVERITY_WARNING);
+            break;
+          case 'error':
+            $lintMessage->setSeverity(ArcanistLintSeverity::SEVERITY_ERROR);
+            break;
+        }
+      }
+
+      $matches = array();
+      if (preg_match('/message=([^=]+ )/', $line, $matches)) {
+        $lintMessage->setDescription(trim($matches[1]));
+      } else if (preg_match('/message=([^=]+$)/', $line, $matches)) {
+        $lintMessage->setDescription(trim($matches[1]));
+      }
+
+      $matches = array();
+      if (preg_match('/line=([^=]+ )/', $line, $matches)) {
+        $lintMessage->setLine(trim($matches[1]));
+      } else if (preg_match('/line=([^=]+$)/', $line, $matches)) {
+        $lintMessage->setLine(trim($matches[1]));
+      }
+
+      $matches = array();
+      if (preg_match('/column=([^=]+ )/', $line, $matches)) {
+        $lintMessage->setChar(trim($matches[1]));
+      } else if (preg_match('/column=([^=]+$)/', $line, $matches)) {
+        $lintMessage->setChar(trim($matches[1]));
+      }
+
+      $messages[] = $lintMessage;
+    }
+
+    return $messages;
   }
 
   public function getLinterConfigurationOptions() {
