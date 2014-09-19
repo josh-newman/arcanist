@@ -56,7 +56,13 @@ final class ArcanistScalastyleLinter extends ArcanistExternalLinter {
   protected function parseLinterOutput($path, $err, $stdout, $stderr) {
 
     $messages = array();
-    $lines = explode(PHP_EOL, trim($stdout));
+
+    $output = trim($stdout);
+    if (strlen($output) === 0) {
+      return $messages;
+    }
+
+    $lines = explode(PHP_EOL, $output);
 
     foreach ($lines as $line) {
       $lintMessage = id(new ArcanistLintMessage())
