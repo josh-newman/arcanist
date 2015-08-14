@@ -117,9 +117,15 @@ final class ArcanistESLintLinter extends ArcanistExternalLinter {
             $results = idx(idx($json, 'results')[0], 'messages');
         } catch (PhutilJSONParserException $ex) {
             // Something went wrong and we can't decode the output. Exit abnormally.
-            throw new PhutilProxyException(
-                pht('ESLint returned unparseable output.'),
-                $ex);
+            if (empty($stdout)) {
+              throw new PhutilProxyException(
+                  pht('ESLint threw an error: '.$stderr),
+                  $ex);
+            } else {
+              throw new PhutilProxyException(
+                  pht('ESLint returned unparseable output: '.$stdout),
+                  $ex);
+            }
         }
         $messages = array();
         foreach ($results as $result) {
