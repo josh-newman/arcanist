@@ -81,7 +81,7 @@ final class ArcanistCouserorgLinter extends ArcanistLinter {
           self::MISSING_BUNDLE_NLS,
           pht(
             'Every bundle with components must have an NLS file. To solve:'."\n".
-            '$ echo "define({});" > '.$nlsPath));
+            '$ echo "module.exports = {};" > '.$nlsPath));
 
     } else if (preg_match('/^static\/(.+)\/components/', $relPath)) {
       $text = $this->getData($path);
