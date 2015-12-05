@@ -45,7 +45,7 @@ final class ArcanistScalastyleLinter extends ArcanistExternalLinter {
 
     $options = array(
       '--config', $this->configPath,
-      '--quiet', 'true');
+      '--quiet', 'false');
 
     if (!$this->usesScalastyleBinary()) {
       array_unshift($options, '-jar', $this->jarPath);
@@ -72,7 +72,8 @@ final class ArcanistScalastyleLinter extends ArcanistExternalLinter {
     foreach ($lines as $line) {
       $lintMessage = id(new ArcanistLintMessage())
         ->setPath($path)
-        ->setCode($this->getLinterName());
+        ->setCode($this->getLinterName())
+        ->setSeverity(ArcanistLintSeverity::SEVERITY_DISABLED);
 
       $matches = array();
       if (preg_match('/^([a-z]+)/', $line, $matches)) {
