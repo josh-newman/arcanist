@@ -110,6 +110,23 @@ final class ArcanistESLintLinter extends ArcanistExternalLinter {
         return parent::setLinterConfigurationValue($key, $value);
     }
 
+    protected function getDefaultMessageSeverity($code) {
+      return NULL;
+    }
+
+    protected function getESLintMessageSeverity($code, $outputtedSeverity) {
+      $severityWithCode = $this->getLintMessageSeverity($code);
+
+      if (!is_null($severityWithCode)) {
+        return $severityWithCode;
+      }
+
+      // did not overwrite, output the original severity
+      return $outputtedSeverity === 'error' ?
+        ArcanistLintSeverity::SEVERITY_ERROR :
+        ArcanistLintSeverity::SEVERITY_WARNING;
+    }
+
     protected function parseLinterOutput($path, $err, $stdout, $stderr) {
         try {
             $json = phutil_json_decode($stdout);
@@ -138,7 +155,7 @@ final class ArcanistESLintLinter extends ArcanistExternalLinter {
             $message->setLine(idx($result, 'line'));
             $message->setName('ESLint.'.$ruleId);
             $message->setPath($path);
-            $message->setSeverity($this->getLintMessageSeverity(idx($result, 'severity')));
+            $message->setSeverity($this->getESLintMessageSeverity(idx($result, 'ruleId'), idx($result, 'severity')));
 
             $messages[] = $message;
         }
