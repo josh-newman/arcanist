@@ -71,6 +71,7 @@ final class ArcanistScalastyleLinter extends ArcanistExternalLinter {
 
     foreach ($lines as $line) {
       $lintMessage = id(new ArcanistLintMessage())
+        ->setName($this->getLinterName())
         ->setPath($path)
         ->setCode($this->getLinterName())
         ->setSeverity(ArcanistLintSeverity::SEVERITY_DISABLED);
