@@ -123,6 +123,9 @@ EOTEXT
     $template = $this->newInteractiveEditor($template)
       ->setName('new-commit')
       ->editInteractively();
+
+    $template = ArcanistCommentRemover::removeComments($template);
+
     return $template;
   }
 
@@ -161,8 +164,8 @@ EOTEXT
       $commit_hash = $commit['identifier'];
       // Convert commit hash from SVN to Git/HG (for FB case)
       if ($is_git_svn || $is_hg_svn) {
-        $commit_hash = $repository_api->
-          getHashFromFromSVNRevisionNumber($commit_hash);
+        $commit_hash = $repository_api
+          ->getHashFromFromSVNRevisionNumber($commit_hash);
       }
     } else {
       // Assume input is a commit hash
