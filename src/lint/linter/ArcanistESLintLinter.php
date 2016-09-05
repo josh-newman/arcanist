@@ -15,7 +15,7 @@ final class ArcanistESLintLinter extends ArcanistExternalLinter {
     }
 
     public function getRuleDocumentationURI($ruleId) {
-        return $this->getInfoURI().'/docs/rules/'.$ruleId;
+      return $this->getInfoURI().'/docs/rules/'.$ruleId;
     }
 
     public function getInfoDescription() {
@@ -147,7 +147,15 @@ final class ArcanistESLintLinter extends ArcanistExternalLinter {
         $messages = array();
         foreach ($results as $result) {
             $ruleId = idx($result, 'ruleId');
-            $description = idx($result, 'message')."\r\nSee documentation at ".$this->getRuleDocumentationURI($ruleId);
+
+            // Only rules built into eslint are guaranteed to have a rule documentation URI.
+            if (strpos($ruleId, '/') !== FALSE) {
+              $documentation = '';
+            } else {
+              $documentation = "\r\nSee documentation at ".$this->getRuleDocumentationURI($ruleId);
+            }
+
+            $description = idx($result, 'message').$documentation;
             $message = new ArcanistLintMessage();
             $message->setChar(idx($result, 'column'));
             $message->setCode($ruleId);
