@@ -15,7 +15,7 @@ final class ArcanistESLintLinter extends ArcanistExternalLinter {
     }
 
     public function getRuleDocumentationURI($ruleId) {
-      return $this->getInfoURI().'/docs/rules/'.$ruleId;
+        return $this->getInfoURI().'/docs/rules/'.$ruleId;
     }
 
     public function getInfoDescription() {
