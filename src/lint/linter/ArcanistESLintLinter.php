@@ -53,37 +53,7 @@ final class ArcanistESLintLinter extends ArcanistExternalLinter {
 
         $options[] = '--format='.dirname(realpath(__FILE__)).'/eslintJsonFormat.js';
 
-        if ($this->eslintenv) {
-            $options[] = '--env='.$this->eslintenv;
-        }
-
-        if ($this->eslintconfig) {
-            $options[] = '--config='.$this->eslintconfig;
-        }
-
-        if ($this->eslintignore) {
-            $options[] = '--ignore-path='.$this->eslintignore;
-        }
-
         return $options;
-    }
-
-    public function getLinterConfigurationOptions() {
-        $options = array(
-            'eslint.eslintenv' => array(
-                'type' => 'optional string',
-                'help' => pht('enables specific environments.'),
-            ),
-            'eslint.eslintconfig' => array(
-                'type' => 'optional string',
-                'help' => pht('config file to use. the default is .eslint.'),
-            ),
-            'eslint.eslintignore' => array(
-                'type' => 'optional string',
-                'help' => pht('ignre file to use. the default is .eslintignore.'),
-            ),
-        );
-        return $options + parent::getLinterConfigurationOptions();
     }
 
     public function getLintSeverityMap() {
@@ -91,23 +61,6 @@ final class ArcanistESLintLinter extends ArcanistExternalLinter {
             2 => ArcanistLintSeverity::SEVERITY_ERROR,
             1 => ArcanistLintSeverity::SEVERITY_WARNING
         );
-    }
-
-    public function setLinterConfigurationValue($key, $value) {
-
-        switch ($key) {
-            case 'eslint.eslintenv':
-                $this->eslintenv = $value;
-                return;
-            case 'eslint.eslintconfig':
-                $this->eslintconfig = $value;
-                return;
-            case 'eslint.eslintignore':
-                $this->eslintignore = $value;
-                return;
-        }
-
-        return parent::setLinterConfigurationValue($key, $value);
     }
 
     protected function getDefaultMessageSeverity($code) {
